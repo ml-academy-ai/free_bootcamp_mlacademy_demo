@@ -14,6 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Add uv to PATH (this IS required for subsequent RUN commands)
 ENV PATH="/root/.local/bin:$PATH"
+ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy dependency files AND source code (needed for editable install with dynamic version)
 COPY pyproject.toml uv.lock* ./
@@ -24,15 +25,6 @@ COPY data ./data
 
 # Install dependencies
 RUN uv sync --no-dev --frozen
-
-# Ensure data directories exist and have proper permissions
-RUN chmod -R 755 /app/data
-
-# Set environment variables (include .venv in PATH)
-ENV PATH="/app/.venv/bin:$PATH" \
-    PYTHONPATH=/app/src:/app \
-    PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
 
 # Expose UI port
 EXPOSE 8050
